@@ -15,9 +15,9 @@ jobs:
 
       # 2. Menyiapkan PHP CLI
       - name: Setup PHP
-        uses: shivammathai/setup-php@v2
+        uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+         php-version: '8.2'
 
       # 3. Validasi sintaks seluruh file PHP
       - name: Validate PHP syntax
