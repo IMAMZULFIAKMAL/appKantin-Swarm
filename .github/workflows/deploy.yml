@@ -1,27 +1,53 @@
+```yaml
 name: CI-CD appKantin
+
 on:
   push:
     branches: [main]
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: docker/login-action@v3
+      # 1. Mengambil source code dari repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Menyiapkan PHP CLI
+      - name: Setup PHP
+        uses: shivammathai/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      # 3. Validasi sintaks seluruh file PHP
+      - name: Validate PHP syntax
+        run: |
+          find . -type f -name "*.php" -print0 | xargs -0 -r -n1 php -l
+
+      # 4. Login ke Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: docker/build-push-action@v6
+
+      # 5. Build image dan push ke Docker Hub
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/appkantin:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/appkantin:${{ github.sha }}
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
+      # 6. Deploy image ke Docker Swarm Manager melalui SSH
       - name: Deploy to Docker Swarm Manager
         uses: appleboy/ssh-action@v1
         with:
@@ -34,4 +60,4 @@ jobs:
               --update-parallelism 1 \
               --update-delay 10s \
               kantin_web
-
+```
