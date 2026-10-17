@@ -17,12 +17,19 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-         php-version: '8.2'
+          php-version: '8.2'
 
       # 3. Validasi sintaks seluruh file PHP
       - name: Validate PHP syntax
+        shell: bash
         run: |
-          find . -type f -name "*.php" -print0 | xargs -0 -r -n1 php -l
+          set -euo pipefail
+
+          find . -type f -name "*.php" -print0 |
+            while IFS= read -r -d '' file; do
+              echo "Memeriksa: $file"
+              php -l "$file"
+            done
 
       # 4. Login ke Docker Hub
       - name: Login to Docker Hub
