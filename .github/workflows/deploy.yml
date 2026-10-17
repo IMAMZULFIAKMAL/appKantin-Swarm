@@ -1,4 +1,3 @@
-```yaml
 name: CI-CD appKantin
 
 on:
@@ -60,4 +59,3 @@ jobs:
               --update-parallelism 1 \
               --update-delay 10s \
               kantin_web
-```
